@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+        <title>D3: A simple packed Bubble Chart</title>
+
+        <script type="text/javascript" src="https://d3js.org/d3.v4.min.js"></script>
+    <link rel="stylesheet" href="#style.css">
+        <style type="text/css">
+            /* No style rules here yet */       
+        </style>
+</head>
+<body> 
+
+
+    <script type="text/javascript">
+        dataset = {
+            "children": [{"Name":"Super Bowl 52","value": 10000, "Title": "TEST TEST", "Venue": "VENUE"},
+                {"Name":"Super Bowl 51","value": 5500, "Title": "TEST TEST"},
+                {"Name":"Super Bowl 50","value":3583, "Title": "TEST TEST"},
+                {"Name":"Super Bowl 49","value":6074, "Title": "TEST TEST"},
+                {"Name":"Super Bowl 48","value":5890, "Title": "TEST TEST"},
+                {"Name":"Super Bowl 47","value":7809, "Title": "TEST TEST"},
+                {"Name":"Super Bowl 46","value":3713, "Title": "TEST TEST"},
+                {"Name":"Super Bowl 45","value":6636, "Title": "TEST TEST"},
+                {"Name":"Super Bowl 44","value":3566, "Title": "TEST TEST"},
+                {"Name":"Super Bowl 43","value":4511, "Title": "TEST TEST"},
+                {"Name":"Super Bowl 42","value":2789, "Title": "TEST TEST"},
+                {"Name":"Super Bowl 41","value":5487, "Title": "TEST TEST"},
+                {"Name":"Super Bowl 40","value":2823, "Title": "TEST TEST"},
+                {"Name":"Super Bowl 39","value":4372, "Title": "TEST TEST"},
+                {"Name":"Super Bowl 38","value":5341, "Title": "TEST TEST"},
+                {"Name":"Super Bowl 37","value":2931, "Title": "TEST TEST"},
+                {"Name":"Super Bowl 36","value":3328, "Title": "TEST TEST"},
+                {"Name":"Super Bowl 35","value":6306, "Title": "TEST TEST"},
+                {"Name":"Super Bowl 34","value":6293, "Title": "TEST TEST"},
+                {"Name":"Super Bowl 33","value":8273, "Title": "TEST TEST"},
+                {"Name":"Super Bowl 32","value":8268, "Title": "TEST TEST"},
+                {"Name":"Super Bowl 31","value":5552, "Title": "TEST TEST"},
+                {"Name":"Super Bowl 30","value":7876, "Title": "TEST TEST"},
+                {"Name":"Super Bowl 29","value":5765, "Title": "TEST TEST"},
+                {"Name":"Super Bowl 28","value":4654, "Title": "TEST TEST"},
+                {"Name":"Super Bowl 27","value":3000, "Title": "TEST TEST"},
+                {"Name":"Super Bowl 26","value":3766, "Title": "TEST TEST"},
+                {"Name":"Super Bowl 25","value":5855, "Title": "TEST TEST"},
+                {"Name":"Super Bowl 24","value":3959, "Title": "TEST TEST"},
+                {"Name":"Super Bowl 23","value":4969, "Title": "TEST TEST"},
+                {"Name":"Super Bowl 22","value":3787, "Title": "TEST TEST"},
+                {"Name":"Super Bowl 21","value":4060, "Title": "TEST TEST"},
+                {"Name":"Super Bowl 20","value":4373, "Title": "TEST TEST"},
+                {"Name":"Super Bowl 19","value":4373, "Title": "TEST TEST"},
+                {"Name":"Super Bowl 18","value":4373, "Title": "TEST TEST"},
+                {"Name":"Super Bowl 17","value":4753, "Title": "TEST TEST"},
+                {"Name":"Super Bowl 16","value":3248, "Title": "TEST TEST"},
+                {"Name":"Super Bowl 15","value":4325, "Title": "TEST TEST"},
+                {"Name":"Super Bowl 14","value":5555, "Title": "TEST TEST"},
+                {"Name":"Super Bowl 13","value":3150, "Title": "TEST TEST"},
+                {"Name":"Super Bowl 12","value":9350, "Title": "TEST TEST"},
+                {"Name":"Super Bowl 11","value":3100, "Title": "TEST TEST"},
+                {"Name":"Super Bowl 10","value":7600, "Title": "TEST TEST"},
+                {"Name":"Super Bowl 9","value":7500, "Title": "TEST TEST"},
+                {"Name":"Super Bowl 8","value":6300, "Title": "TEST TEST"},
+                {"Name":"Super Bowl 7","value":3133, "Title": "TEST TEST"},
+                {"Name":"Super Bowl 6","value":3600, "Title": "TEST TEST"},
+                {"Name":"Super Bowl 5","value":9000, "Title": "TEST TEST"},
+                {"Name":"Super Bowl 4","value":4100, "Title": "TEST TEST"},
+                {"Name":"Super Bowl 3","value":5310, "Title": "TEST TEST"},
+                {"Name":"Super Bowl 2","value":7217, "Title": "TEST TEST"},
+                {"Name":"Super Bowl 1","value":10000, "Title": "TEST TEST"}],
+                
+        };
+        var diameter = 1050;
+        var color = d3.scaleOrdinal(d3.schemeCategory20);
+        var bubble = d3.pack(dataset)
+            .size([diameter, diameter])
+            .padding(1.5);
+        var svg = d3.select("body")
+            .append("svg")
+            .attr("width", diameter)
+            .attr("height", diameter)
+            .attr("class", "bubble");
+        var nodes = d3.hierarchy(dataset)
+            .sum(function(d) { 
+                console.log(d);
+                
+                return d.value;});
+        
+      
+        var node = svg.selectAll(".node")
+            .data(bubble(nodes).descendants())
+            .enter()
+            .filter(function(d){
+                return  !d.children
+            })
+            .append("g")
+            .attr("class", "node")
+            .attr("transform", function(d) {
+                return "translate(" + d.x + "," + d.y + ")";
+            });
+        node.append("title")
+            .text(function(d) {
+               return d.Name + " / " + d.value + " / " + d.Title + " ";
+            });
+
+        node.append("circle")
+            .attr("r", function(d) {
+                return d.r;
+            })
+            .style("fill", function(d,i) {
+                return color(i);
+            });
+        node.append("text")
+            .attr("dy", ".3em")
+            .style("text-anchor", "middle")
+            .text(function(d) {
+                return d.data.Name.substring(0, d.r / 3);
+            })
+            .attr("font-family", "sans-serif")
+            .attr("font-size", function(d){
+                return d.r/5;
+            })
+            .attr("fill", "white");
+        node.append("text")
+           .attr("dy", "1.5em")
+           .style("text-anchor", "middle")
+           .text(function(d) {
+            return d.data.Title.substring(0, d.r / 3);
+            })
+           .attr("font-family",  "sans-serif")
+           .attr("font-size", function(d){
+            return d.r/5;
+           })
+           .attr("fill", "white");
+        node.append("text")
+            .attr("dy", "3.4em")
+            .style("text-anchor", "middle")
+            .text(function(d) {
+                return d.data.Venue;
+            })
+            .attr("font-family",  "sans-serif")
+            .attr("font-size", function(d){
+                return d.r/7;
+            })
+            .attr("fill", "white");
+        d3.select(self.frameElement)
+            .style("height", diameter + "px");
+    </script>
+    
+    
+    
+    
+</body>
+</html>
